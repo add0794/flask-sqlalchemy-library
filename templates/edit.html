@@ -1,35 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Add Book</title>
-  </head>
-  <body>
-    <form action="{{ url_for('edit') id=id}}" method="POST">
-      <label>Book Name: {{ book['title'] }}</label>
-      <label>Current Rating: {{ book['rating'] }}</label>
-      <!-- <input hidden="hidden" name="id" value="{{book.id}}"> -->
-      <input type="text" name="rating" placeholder="New rating" />
-      <label>Rating</label>
-      <input type="text" name="rating" />
-      <button type="submit">Change rating</button>
-    </form>
-  </body>
-</html>
-
-<!-- <!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Edit Rating</title>
+    <meta charset="UTF-8" />
+    <title>Edit Book</title>
 </head>
 <body>
-     <form action="{{ url_for('edit') }}" method="POST">
-        <p>Book Name: {{book.title}}</p>
-        <p>Current Rating {{book.rating}}</p>
-         <input hidden="hidden" name="id" value="{{book.id}}">
-        <input name="rating" type="text" placeholder="New Rating">
-        <button type="submit">Change Rating</button>
+  <form action="{{ url_for('edit') }}" method="POST">
+    <input type="hidden" name="id" value="{{ book.id }}">
+    <p>Book Name: {{book.title}}</p>
+    <p>Book author: {{book.author}}</p>
+    <p>Current Rating {{book.rating}}</p>
+    <!-- <label for="new-title">New Title:</label> -->
+    <input type="text" id="new-title" name="title" placeholder="New Title" />
+    <!-- <label for="new-author">New Author:</label> -->
+    <input type="text" id="new-author" name="author" placeholder="New Author" />
+    <!-- <label for="new-rating">New Rating:</label> -->
+    <input type="number" id="new-rating" name="rating" placeholder="New Rating" />
+    <button type="submit">Save Changes</button>
     </form>
 </body>
-</html> -->
+</html>
