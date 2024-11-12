@@ -4,18 +4,18 @@ This is a simple Flask application for managing books in a SQLite database. The 
 
 ## Installation
 
-To get started with this application, you will need to have Python 3.x and install the dependencies in the requirements.txt to your system. You can install the dependencies using pip:
+To get started with this application, you will need to have Python 3.x and install the dependencies in the requirements.txt to your system by running the following command in the shell:
 
 ```bash
-pip install flask
+pip install -r /path/to/requirements.txt
 ```
 
 ## Running the Application
 
-Save this code as `app.py` and run it using the following command:
+Run the application using the following command:
 
 ```bash
-python app.py
+python server.py
 ```
 
 By default, the application will start on port 5000. You can access it in your web browser at http://127.0.0.1:5000/.
