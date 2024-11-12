@@ -1,32 +1,47 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Integer, String, Float
+import matplotlib.pyplot as plt
+import os
+import pandas as pd
+from sqlalchemy import Integer, String, Float, create_engine
 
 # Create the Flask application
 app = Flask(__name__)
 
-# Configure the SQLite database, relative to the app instance folder
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///books.db'
+# Get the absolute path of the current file's directory
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+# Create the database URI by joining the path and database name
+database_path = os.path.join(basedir, 'books.db')
+
+# Configure the SQLAlchemy database URI
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{database_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = "books"
 
-# Create the SQLAlchemy extension and specify the base class
-Base = declarative_base()
-db = SQLAlchemy(model_class=Base)
+# Create the SQLAlchemy extension
+db = SQLAlchemy(app)
 
 # Define the Book model and map it to the database table
 class Book(db.Model):
     __tablename__ = 'books'
-
+    
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String, nullable=False)
     author = db.Column(db.String, nullable=False)
     rating = db.Column(db.Float, nullable=False)
 
+# Create the database and tables
 with app.app_context():
-    db.init_app(app) # Initialize the Flask application with the SQLAlchemy extension
     db.create_all()
+
+# # Configure Celery
+# def make_celery(app):
+#     celery = Celery(app.import_name, broker=app.config["CELERY_BROKER_URL"])
+#     celery.conf.update(app.config)
+#     return celery
+
+# celery = make_celery(app)
 
 @app.route("/")
 def home(name=None):
@@ -125,6 +140,30 @@ def delete():
     db.session.commit()
     flash("Book deleted successfully!", "success")
     return redirect(url_for('home'))
+
+DATABASE_URI = 'sqlite:///books.db'
+engine = create_engine(DATABASE_URI)
+
+@app.route('/analyze', methods=["GET", "POST"])
+def analyze():
+    if request.method == "POST":
+        flash("Analysis task started!", "info")
+        with engine.connect() as conn:
+            df = pd.read_sql("SELECT * FROM books", conn)
+            
+            # Convert DataFrame to HTML
+            df_html = df.to_html(classes="table table-striped", index=False)
+            
+            # Optional: Perform additional analysis (e.g., save plots as images)
+            # plt.figure(figsize=(10, 6))
+            # df['rating'].value_counts().plot(kind='bar', color='skyblue')
+            # plt.title("Book Ratings Distribution")
+            # plt.xlabel("Rating")
+            # plt.ylabel("Frequency")
+            # plt.savefig("static/ratings_distribution.png")
+            
+            return render_template("analyze.html", df_html=df_html)
+    return render_template("analyze.html", df_html=None)
 
 if __name__ == "__main__":
     app.run(debug=True)
