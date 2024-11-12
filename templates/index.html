@@ -1,14 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8" />
     <title>Library</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
+
 <body>
+
+  <!-- Flash Messages for Success -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flashes">
+        {% for category, message in messages %}
+          {% if category == 'success' %}
+            <div class="flash-success">{{ message }}</div>
+          {% else %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <h1>My Library</h1>
   {% if is_empty %}
   <p>Library is empty.</p>
   {% endif %}
+
   <ul>
     {% for book in books %}
     <li>
@@ -19,5 +39,6 @@
     {% endfor %}
     </ul>
     <a href="{{ url_for('add') }}">Add New Book</a>
+    
 </body>
 </html>

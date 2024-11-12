@@ -3,8 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <title>Add Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   </head>
   <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %} 
     <form action="{{url_for('add')}}" method="POST">
       <label>Book Name</label>
       <input type="text" name="title"/>

@@ -1,8 +1,9 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <title>Edit Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
   <form action="{{ url_for('edit') }}" method="POST">
@@ -10,13 +11,105 @@
     <p>Book Name: {{book.title}}</p>
     <p>Book author: {{book.author}}</p>
     <p>Current Rating {{book.rating}}</p>
-    <!-- <label for="new-title">New Title:</label> -->
-    <input type="text" id="new-title" name="title" placeholder="New Title" />
-    <!-- <label for="new-author">New Author:</label> -->
-    <input type="text" id="new-author" name="author" placeholder="New Author" />
+    <!<label for="new-title">New Title:</label> -->
+    <!-- <input type="text" id="new-title" name="title" placeholder="New Title" />
+    <label for="new-author">New Author:</label>
+    <<input type="text" id="new-author" name="author" placeholder="New Author" /> -->
     <!-- <label for="new-rating">New Rating:</label> -->
-    <input type="number" id="new-rating" name="rating" placeholder="New Rating" />
-    <button type="submit">Save Changes</button>
+    <!-- <input type="number" id="new-rating" name="rating" placeholder="New Rating" /> -->
+    <!-- <button type="submit">Save Changes</button> --> 
+    <!-- </form> -->
+<!-- </body> -->
+<!-- </html> --> 
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Edit Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+      <!-- Flash Messages -->
+    <!-- {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+          {% for category, message in messages %}
+              <div class="flash-message {{ category }}">
+                  {{ message }}
+              </div>
+          {% endfor %}
+      {% endif %}
+    {% endwith %} -->
+        <!-- Flash Messages -->
+    <!-- {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+            <li class="flash-message {{ category }}">
+              {{ message }}
+          </div>">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %} -->
+        <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Edit Form -->
+    <!-- <form method="POST" action="{{ url_for('edit', id=book.id) }}">
+        <label for="title">Title:</label>
+        <input type="text" name="title" id="title" value="{{ book.title }}">
+        
+        <label for="author">Author:</label>
+        <input type="text" name="author" id="author" value="{{ book.author }}">
+        
+        <label for="rating">Rating (1-10):</label>
+        <input type="text" name="rating" id="rating" value="{{ book.rating }}">
+        
+        <button type="submit">Update Book</button>
+    </form> -->
+    <!-- {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+          {% for category, message in messages %}
+              <div class="flash-message {{ category }}">
+                  {{ message }}
+              </div>
+          {% endfor %}
+      {% endif %}
+    {% endwith %} -->
+    <!-- <form action="{{ url_for('edit') }}" method="POST">
+
+      <label>Book Name</label>
+      <input type="text" name="title"/>
+      <label>Book Author</label>
+      <input type="text" name="author" />
+      <label>Rating</label>
+      <input type="number" name="rating" />
+      <button type="submit">Add Book</button>
+      <input type="hidden" name="id" value="{{ book.id }}"> -->
+    <form method="POST" action="{{ url_for('edit', id=book.id) }}">
+      <!-- Hidden input to pass the book ID -->
+      <input type="hidden" name="id" value="{{ book.id }}">
+  
+      <label for="title">Book Name</label>
+      <input type="text" name="title" value="{{ book.title }}">
+      
+      <label for="author">Book Author</label>
+      <input type="text" name="author" value="{{ book.author }}">
+      
+      <label for="rating">Rating</label>
+      <input type="number" name="rating" value="{{ book.rating }}">
+      
+      <button type="submit">Save Changes</button>
     </form>
-</body>
+  </body>
 </html>
