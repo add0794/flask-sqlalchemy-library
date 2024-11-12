@@ -34,7 +34,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///books.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = "books"
 
-
 # Create the SQLAlchemy extension and specify the base class
 Base = declarative_base()
 db = SQLAlchemy(model_class=Base)
@@ -48,11 +47,9 @@ class Book(db.Model):
     author = db.Column(db.String, nullable=False)
     rating = db.Column(db.Float, nullable=False)
 
-
 with app.app_context():
     db.init_app(app) # Initialize the Flask application with the SQLAlchemy extension
     db.create_all()
-
 
 @app.route("/")
 def home(name=None):
@@ -68,30 +65,6 @@ def home(name=None):
     # Use .scalars() to get the elements rather than entire rows from the database
     all_books = result.scalars()
     return render_template('index.html', books=all_books, is_empty=is_empty)
-   
-
-
-# @app.route("/add", methods=["GET", "POST"])
-# def add():
-#     if request.method == "POST":
-#         new_book = Book(
-#             title=request.form["title"],
-#             author=request.form["author"],
-#             if request.form["rating"] < 1 or request.form["rating"] > 10:
-#                 flash("Error: Rating must be between 1 and 10.", "error")
-#                 return redirect(url_for('add', id=book_id))
-#             else:
-#                 rating=int(request.form["rating"])
-#         )
-#         rating = int(rating)
-#         if rating < 1 or rating > 10:
-#             flash("Error: Rating must be between 1 and 10.", "error")
-#             return redirect(url_for('add', id=book_id))
-#         db.session.add(new_book)
-#         db.session.commit()
-#         return redirect(url_for('home'))
-
-#     return render_template('add.html')
 
 @app.route("/add", methods=["GET", "POST"])
 def add():
@@ -124,106 +97,6 @@ def add():
             return redirect(url_for('add'))
     
     return render_template('add.html')
-
-# @app.route('/edit', methods=["GET", "POST"])
-# def edit():
-#     if request.method == "POST":
-#         book_id = request.form["id"]
-#         book_to_update = db.get_or_404(Book, book_id)
-#         # Update title if form input is not empty
-#         if request.form["title"]:
-#             book_to_update.title = request.form["title"]
-#         # Update author if form input is not empty
-#         if request.form["author"]:
-#             book_to_update.author = request.form["author"]
-#         # Update rating if form input is not empty
-#         if request.form["rating"]:
-#             if request.form["rating"] < 1 or request.form["rating"] > 10:
-#                 # Flash an error message if rating is invalid
-#                 flash("Error: Rating must be between 1 and 10.", "error")
-#                 redirect(redirect_url())
-#                 # return redirect(url_for('edit', id=book_id))  # Redirect back to the form with error
-#             else:
-#                 book_to_update.rating = request.form["rating"]
-            # else:
-            #     book_to_update
-            # except ValueError:
-            #     # Flash an error message if the rating is not a valid number
-            #     flash("Error: Please enter a valid number for rating.", "error")
-            #     return redirect(url_for('edit', id=book_id))  # Redirect back to the form with error
-# @app.route('/edit', methods=["GET", "POST"])
-# def edit():
-#     if request.method == "POST":
-#         book_id = request.form["id"]
-#         book_to_update = db.get_or_404(Book, book_id)
-        
-#         # Update title if form input is not empty
-#         if request.form["title"]:
-#             book_to_update.title = request.form["title"]
-            
-#         # Update author if form input is not empty    
-#         if request.form["author"]:
-#             book_to_update.author = request.form["author"]
-            
-#         # Update rating if form input is not empty
-#         if request.form["rating"]:
-#             try:
-#                 rating = int(request.form["rating"])
-#                 if rating < 1 or rating > 10:
-#                     flash("Error: Rating must be between 1 and 10.", "error")
-#                     return redirect(url_for('edit', id=book_id))
-#                 else:
-#                     book_to_update.rating = rating
-#             except ValueError:
-#                 flash("Error: Rating must be a valid number.", "error")
-#                 return redirect(url_for('edit', id=book_id))
-                
-#         db.session.commit()
-#         # return redirect(url_for('home'))  # or wherever you want to redirect after successful edit
-#         #  db.session.commit()
-#         # return redirect(url_for('home'))
-#     book_id = request.args.get('id')
-#     book_selected = db.get_or_404(Book, book_id)
-#     return render_template("edit.html", book=book_selected)
-
-# @app.route('/edit', methods=["GET", "POST"])
-# def edit():
-#     if request.method == "POST":
-#         book_id = request.args.get('id')
-
-#         # book_id = request.form["id"]
-#         book_to_update = db.get_or_404(Book, book_id)
-        
-#         # Update title if form input is not empty
-#         if request.form["title"]:
-#             book_to_update.title = request.form["title"]
-        
-#         # Update author if form input is not empty
-#         if request.form["author"]:
-#             book_to_update.author = request.form["author"]
-        
-#         # Update rating if form input is not empty
-#         if request.form["rating"]:
-#             try:
-#                 rating = int(request.form["rating"])
-#                 if rating < 1 or rating > 10:
-#                     flash("Error: Rating must be between 1 and 10.", "error")
-#                     return redirect(url_for('edit', id=book_id))
-#                 else:
-#                     book_to_update.rating = rating
-#             except ValueError:
-#                 flash("Error: Rating must be a valid number.", "error")
-#                 return redirect(url_for('edit'))
-
-#         db.session.add(book_to_update)
-#         db.session.commit()
-#         flash("Book updated successfully!", "success")  # Add a success message
-#         return redirect(url_for('home'))  # Stay on edit page
-    
-#     # GET request handling
-#     # book_id = request.args.get('id')
-#     # book_selected = db.get_or_404(Book, book_id)
-#     return render_template("edit.html")
 
 @app.route('/edit', methods=["GET", "POST"])
 def edit():
@@ -264,49 +137,6 @@ def edit():
     book_selected = db.get_or_404(Book, book_id)
     return render_template("edit.html", book=book_selected)
 
-
-# from flask import Flask, request, redirect, url_for, flash, render_template
-# from server import db, Book  # Assuming `db` and `Book` are defined in server.py
-
-# @app.route('/edit', methods=["GET", "POST"])
-# def edit():
-#     if request.method == "POST":
-#         book_id = request.form.get("id")  # Retrieve the book ID from form data
-#         book_to_update = db.get_or_404(Book, book_id)
-
-#         # Update title if form input is not empty
-#         if request.form.get("title"):
-#             book_to_update.title = request.form["title"]
-
-#         # Update author if form input is not empty
-#         if request.form.get("author"):
-#             book_to_update.author = request.form["author"]
-
-#         # Update rating and validate if it's between 1 and 10
-#         rating_input = request.form.get("rating")
-#         if rating_input:
-#             try:
-#                 rating = int(rating_input)
-#                 if 1 <= rating <= 10:
-#                     book_to_update.rating = rating
-#                 else:
-#                     flash("Error: Rating must be between 1 and 10.", "error")
-#                     return redirect(url_for('edit', id=book_id))
-#             except ValueError:
-#                 flash("Error: Rating must be a valid number.", "error")
-#                 return redirect(url_for('edit', id=book_id))
-
-#         # Commit the updates if no errors occur
-#         db.session.commit()
-#         flash("Book updated successfully!", "success")
-#         return redirect(url_for('home'))
-
-#     # For GET requests, retrieve the book and render the edit form
-#     book_id = request.args.get("id")
-#     book_selected = db.get_or_404(Book, book_id)
-#     return render_template("edit.html", book=book_selected)
-
-
 @app.route("/delete")
 def delete():
     book_id = request.args.get('id')
@@ -318,7 +148,6 @@ def delete():
     db.session.commit()
     flash("Book deleted successfully!", "success")
     return redirect(url_for('home'))
-
 
 if __name__ == "__main__":
     app.run(debug=True)
