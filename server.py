@@ -2,29 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Integer, String, Float
-# import sqlite3
-
-'''
-Red underlines? Install the required packages first: 
-Open the Terminal in PyCharm (bottom left). 
-
-On Windows type:
-python -m pip install -r requirements.txt
-
-On MacOS type:
-pip3 install -r requirements.txt
-
-This will install the packages from requirements.txt for this project.
-'''
-
-# SQLite version
-
-# db = sqlite3.connect("books.db") # creates the database
-# cursor = db.cursor() # creates the cursor
-# cursor.execute("CREATE TABLE books (id INTEGER PRIMARY KEY, title varchar(250) NOT NULL UNIQUE, author varchar(250) NOT NULL, rating FLOAT NOT NULL)") # creates the table
-# cursor.execute("INSERT INTO books VALUES(1, 'Harry Potter', 'J. K. Rowling', '9.3')") # inserts an entry into the tab;e
-# db.commit() # ensures that the entry is placed
-# db.close()
 
 # Create the Flask application
 app = Flask(__name__)
