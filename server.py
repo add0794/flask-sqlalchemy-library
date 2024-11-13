@@ -1,23 +1,17 @@
+from database_backend import *
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-import matplotlib.pyplot as plt
-import os
+# import matplotlib.pyplot as plt
+# import multiprocessing
 import pandas as pd
 from sqlalchemy import Integer, String, Float, create_engine
-import threading
-import time
+# import threading
 
 # Create the Flask application
 app = Flask(__name__)
 
-# Get the absolute path of the current file's directory
-basedir = os.path.abspath(os.path.dirname(__file__))
-
-# Create the database URI by joining the path and database name
-database_path = os.path.join(basedir, 'books.db')
-
 # Configure the SQLAlchemy database URI
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{database_path}'
+app.config['SQLALCHEMY_DATABASE_URI'] = database_uri()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = "books"
 
@@ -33,10 +27,6 @@ class Book(db.Model):
     author = db.Column(db.String, nullable=False)
     rating = db.Column(db.Float, nullable=False)
 
-# Create the database and tables
-# with app.app_context():
-    # app.app_context()
-    # db.create_all()
 app.app_context().push()
 db.create_all()
 
@@ -138,13 +128,11 @@ def delete():
     flash("Book deleted successfully!", "success")
     return redirect(url_for('home'))
 
-DATABASE_URI = 'sqlite:///books.db'
-engine = create_engine(DATABASE_URI)
-
 @app.route('/analyze', methods=["GET", "POST"])
 def analyze():
     if request.method == "POST":
         flash("Analysis complete!", "info")
+        engine = create_engine(URI)
         with engine.connect() as conn:
             df = pd.read_sql("SELECT * FROM books", conn)
             
@@ -154,25 +142,20 @@ def analyze():
             return render_template("analyze.html", df_html=df_html)
     return render_template("analyze.html", df_html=None)
 
-def check_database_file():
-    """Background thread to check if the database file exists."""
-    while True:
-        if os.path.exists(database_path):
-            print("Database file exists!")
-        else:
-            print("Database file does not exist.")
-        time.sleep(60*5)  # Check every 5 seconds (adjust as needed)
-
 if __name__ == "__main__":
-    # Start the background thread to check the database file
+    # Option 1: Threading
     db_check_thread = threading.Thread(target=check_database_file, daemon=True)
     db_check_thread.start()
 
     app.run(debug=True, use_reloader=False)
-    # while os.path.exists(database_path):
-    #     print("Database file exists!")
-    # # print(f"Database created at: {database_path}")
-    # # if os.path.exists(database_path):
-    # #     print("Database file exists!")
-    # # else:
-    # #     print("Database file was not created!")
+
+    # Option 2: Multiprocessing
+
+    # p1 = multiprocessing.Process(target=app.run(debug=True, use_reloader=False))
+    # p2 = multiprocessing.Process(target=check_database_file)
+   
+    # p1.start()
+    # p2.start()
+
+    # p1.join()
+    # p2.join()
