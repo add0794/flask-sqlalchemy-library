@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
+
+nkl 
 # create the extension
 db = SQLAlchemy()
 # create the app
