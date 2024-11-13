@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import os
 import pandas as pd
 from sqlalchemy import Integer, String, Float, create_engine
+import threading
+import time
 
 # Create the Flask application
 app = Flask(__name__)
@@ -32,16 +34,11 @@ class Book(db.Model):
     rating = db.Column(db.Float, nullable=False)
 
 # Create the database and tables
-with app.app_context():
-    db.create_all()
-
-# # Configure Celery
-# def make_celery(app):
-#     celery = Celery(app.import_name, broker=app.config["CELERY_BROKER_URL"])
-#     celery.conf.update(app.config)
-#     return celery
-
-# celery = make_celery(app)
+# with app.app_context():
+    # app.app_context()
+    # db.create_all()
+app.app_context().push()
+db.create_all()
 
 @app.route("/")
 def home(name=None):
@@ -147,23 +144,35 @@ engine = create_engine(DATABASE_URI)
 @app.route('/analyze', methods=["GET", "POST"])
 def analyze():
     if request.method == "POST":
-        flash("Analysis task started!", "info")
+        flash("Analysis complete!", "info")
         with engine.connect() as conn:
             df = pd.read_sql("SELECT * FROM books", conn)
             
             # Convert DataFrame to HTML
             df_html = df.to_html(classes="table table-striped", index=False)
             
-            # Optional: Perform additional analysis (e.g., save plots as images)
-            # plt.figure(figsize=(10, 6))
-            # df['rating'].value_counts().plot(kind='bar', color='skyblue')
-            # plt.title("Book Ratings Distribution")
-            # plt.xlabel("Rating")
-            # plt.ylabel("Frequency")
-            # plt.savefig("static/ratings_distribution.png")
-            
             return render_template("analyze.html", df_html=df_html)
     return render_template("analyze.html", df_html=None)
 
+def check_database_file():
+    """Background thread to check if the database file exists."""
+    while True:
+        if os.path.exists(database_path):
+            print("Database file exists!")
+        else:
+            print("Database file does not exist.")
+        time.sleep(60*5)  # Check every 5 seconds (adjust as needed)
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Start the background thread to check the database file
+    db_check_thread = threading.Thread(target=check_database_file, daemon=True)
+    db_check_thread.start()
+
+    app.run(debug=True, use_reloader=False)
+    # while os.path.exists(database_path):
+    #     print("Database file exists!")
+    # # print(f"Database created at: {database_path}")
+    # # if os.path.exists(database_path):
+    # #     print("Database file exists!")
+    # # else:
+    # #     print("Database file was not created!")

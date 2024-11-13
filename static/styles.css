@@ -51,6 +51,11 @@ p {
     color: #333;
 }
 
+.nav-link {
+    display: block;
+    margin-bottom: 10px;  /* Adds space between links */
+}
+
 /* Flash Message Box Styles */
 .flashes {
     position: fixed;
