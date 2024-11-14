@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Search Results</title>
-</head>
-<body>
-    <h1>Search Results</h1>
+{% extends "base.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+
+<h1>Search Results</h1>
     {% if results %}
         <ul>
             {% for result in results %}
@@ -18,5 +17,16 @@
     {% else %}
         <p>No results found.</p>
     {% endif %}
-</body>
-</html>
+
+<form action="{{ url_for('search') }}" method="get">
+  <input type="text" name="q" placeholder="Search for a book">
+  <button type="submit">Search</button>
+</form>
+
+<footer class="bottom"></footer>
+    <a href="{{ url_for('home') }}" class="nav-link">Go to Library</a>
+    <a href="{{ url_for('add') }}" class="nav-link">Add New Book</a>
+    <a href="{{ url_for('analyze') }}" class="nav-link">Analyze Library</a>
+</footer>
+
+{% endblock %}
