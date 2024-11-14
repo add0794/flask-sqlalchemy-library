@@ -1,44 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Data Analysis</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-    <!-- Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flashes">
-                {% for category, message in messages %}
-                    <div class="flash-message {{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+{% block title %}Analyze Library{% endblock %}
 
-    <h1>Analyze Book Data</h1>
+{% block content %}
 
-    {% if df_html %}
-        <h2>Analysis Results</h2>
-        <!-- Display DataFrame as HTML table -->
-        <div>{{ df_html|safe }}</div>
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flashes">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
     {% endif %}
+{% endwith %}
 
+<h1>Analyze Book Data</h1>
 
-    <!-- <a href="{{ url_for('analyze') }}" class="nav-link">Start New Analysis</a>
-    <a href="{{ url_for('home') }}" class="nav-link">Go to Library</a> -->
+{% if df_html %}
+    <h2>Analysis Results</h2>
+    <!-- Display DataFrame as HTML table -->
+    <div>{{ df_html|safe }}</div>
+{% endif %}
 
-    <!-- Button to start a new analysis -->
-    <form method="POST" action="{{ url_for('analyze') }}" class="nav-link">
-        <button type="submit">Start New Analysis</button>
-    </form>
+<!-- Button to start a new analysis -->
+<form method="POST" action="{{ url_for('analyze') }}" class="nav-link">
+    <button type="submit">Start New Analysis</button>
+</form>
 
-    <!-- Button to go back to the library -->
-    <form method="GET" action="{{ url_for('home') }}" class="nav-link">
-        <button type="submit">Go to Library</button>
-    </form>
+<!-- Button to go back to the library -->
+<form method="GET" action="{{ url_for('home') }}" class="nav-link">
+    <button type="submit">Go to Library</button>
+</form>
 
-</body>
-</html>
+{% endblock %}
