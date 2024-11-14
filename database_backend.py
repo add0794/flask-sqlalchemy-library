@@ -18,6 +18,7 @@ def database_uri():
 
     return DATABASE_URI
 
+'sqlite:///books.db'
 print(database_uri())
 
 def check_database_file():
