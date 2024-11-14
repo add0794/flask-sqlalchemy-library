@@ -1,46 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends "base.html" %}
 
-    <meta charset="UTF-8" />
-    <title>Library</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
+{% block title %}Library{% endblock %}
 
-<body>
+{% block content %}
+<form action="{{ url_for('search') }}" method="get">
+  <input type="text" name="q" placeholder="Search for a book">
+  <button type="submit">Search</button>
+</form>
 
-  <!-- Flash Messages for Success -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="flashes">
-        {% for category, message in messages %}
-          {% if category == 'success' %}
-            <div class="flash-success">{{ message }}</div>
-          {% else %}
-            <div class="flash-message {{ category }}">{{ message }}</div>
-          {% endif %}
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-
-  <h1>My Library</h1>
-  {% if is_empty %}
-  <p>Library is empty.</p>
+<!-- Flash Messages for Success -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flashes">
+      {% for category, message in messages %}
+        {% if category == 'success' %}
+          <div class="flash-success">{{ message }}</div>
+        {% else %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endif %}
+      {% endfor %}
+    </div>
   {% endif %}
+{% endwith %}
 
-  <ul>
-    {% for book in books %}
-    <li>
-      <a href="{{ url_for('delete', id=book.id) }}">Delete</a>
-      {{ book.title }} by {{ book.author }} (Rating: {{ book.rating }})
-      <a href="{{ url_for('edit', id=book.id) }}">Edit Rating</a>
-    </li>
-    {% endfor %}
-    </ul>
+<h1>My Library</h1>
+{% if is_empty %}
+<p>Library is empty.</p>
+{% endif %}
 
-    <a href="{{ url_for('add') }}" class="nav-link">Add New Book</a>
-    <a href="{{ url_for('analyze') }}" class="nav-link">Analyze Library</a>
-    
-</body>
-</html>
+<ul>
+  {% for book in books %}
+  <li>
+    <a href="{{ url_for('delete', id=book.id) }}">Delete</a>
+    {{ book.title }} by {{ book.author }} (Rating: {{ book.rating }})
+    <a href="{{ url_for('edit', id=book.id) }}">Edit Rating</a>
+  </li>
+  {% endfor %}
+</ul>
+
+<footer class="bottom">
+
+  <a href="{{ url_for('add') }}" class="nav-link">Add New Book</a>
+  <a href="{{ url_for('analyze') }}" class="nav-link">Analyze Library</a>
+
+</footer>
+{% endblock %}
