@@ -54,6 +54,14 @@ data or tries to submit a rating outside the valid range (1-10), an error messag
 
 The delete book route allows users to remove a book from the database by selecting the book they want to delete from the list of books on the home page.
 
+### Search Book Route (`/search`)
+
+The search book route allows users to search for a book from the database by entering text in the search box on the home page.
+
+### Analyze Book Route (`/analyze`)
+
+The analyze search route allows users to tabulate books, titles, and ratings.
+
 ## HTML Templates
 
 HTML Templates for this application are located in the `templates` directory:
@@ -61,11 +69,13 @@ HTML Templates for this application are located in the `templates` directory:
 - `index.html`: The HTML template for displaying the list of books and an empty message if there are no books. It also includes forms to add, edit, or delete a book.
 - `add.html`: The HTML template for adding a new book.
 - `edit.html`: The HTML template for editing a book's information, prefilled with the selected book's data.
+- `search.html`: The HTML template for searching for a book.
+- `analyze.html`: The HTML template for conducting data analysis of the library.
 
 ## Future Improvements
 
 This application can be further improved by adding more features such as:
 
 - Pagination for displaying books if the number of books in the database becomes large.
-- Search functionality to quickly find specific books.
+- Improved analysis for tabulating books with ratings, plotting book count against ratings, etc.
 - Add validation for form inputs to ensure only valid data is entered (e.g., alphabetical characters for titles and authors, numerical values for ratings).
