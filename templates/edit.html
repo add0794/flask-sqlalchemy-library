@@ -1,34 +1,43 @@
-{ % extends "base.html" % }
+{% extends "base.html" %}
 
 {% block title %}Edit Library{% endblock %}
 
 {% block content %}
 
-<!-- Flash Messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul class="flashes">
-      {% for category, message in messages %}
-        <li class="{{ category }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
+<h1>Edit Library</h1>
 
-<form method="POST" action="{{ url_for('edit', id=book.id) }}">
-  <!-- Hidden input to pass the book ID -->
+<form action="{{ url_for('edit') }}" method="POST">
+  <!-- Hidden field to pass the book ID -->
   <input type="hidden" name="id" value="{{ book.id }}">
 
-  <label for="title">Book Name</label>
-  <input type="text" name="title" value="{{ book.title }}">
-  
-  <label for="author">Book Author</label>
-  <input type="text" name="author" value="{{ book.author }}">
-  
-  <label for="rating">Rating</label>
-  <input type="number" name="rating" value="{{ book.rating }}">
-  
-  <button type="submit">Save Changes</button>
+  <div>
+      <label for="title">Title:</label>
+      <input type="text" id="title" name="title" value="{{ book.title }}">
+  </div>
+
+  <div>
+      <label for="author">Author:</label>
+      <input type="text" id="author" name="author" value="{{ book.author }}">
+  </div>
+
+  <div>
+      <label for="rating">Rating (1-10):</label>
+      <input type="number" id="rating" name="rating" step="1" value="{{ book.rating }}" min="1" max="10" required>
+  </div>
+
+  <button type="submit" class="btn btn-success">Save Changes</button>
+  <a href="{{ url_for('home') }}" class="btn btn-primary">Cancel</a>
 </form>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flashes">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
 
 {% endblock %}
