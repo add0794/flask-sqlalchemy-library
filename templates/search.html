@@ -4,29 +4,51 @@
 
 {% block content %}
 
-<h1>Search Results</h1>
-    {% if results %}
-        <ul>
-            {% for result in results %}
-                <li>
-                    <h2>{{ result.title }}</h2>
-                    <p>{{ result.description }}</p>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No results found.</p>
+<div class="search-results-container">
+    <h1>Search Results</h1>
+    
+    <form action="{{ url_for('search') }}" method="get" class="search-form">
+        <input 
+            type="text" 
+            name="q" 
+            class="search-input" 
+            placeholder="Search for a book"
+            value="{{ request.args.get('q', '') }}"
+            required
+        >
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% if request.args.get('q') %}
+        {% if results %}
+            <table class="search-results-table">
+                <thead>
+                    <tr>
+                        <th class="title-column"><b>Title</b></th>
+                        <th class="author-column"><b>Author</b></th>
+                        <th class="rating-column">Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <td class="title-column">{{ result.title }}</td>
+                        <td class="author-column">{{ result.author }}</td>
+                        <td class="rating-column">{{ result.rating }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-results">No books found matching "{{ request.args.get('q') }}"</p>
+        {% endif %}
     {% endif %}
+</div>
 
-<form action="{{ url_for('search') }}" method="get">
-  <input type="text" name="q" placeholder="Search for a book">
-  <button type="submit">Search</button>
-</form>
-
-<footer class="bottom"></footer>
-    <a href="{{ url_for('home') }}" class="nav-link">Go to Library</a>
-    <a href="{{ url_for('add') }}" class="nav-link">Add New Book</a>
-    <a href="{{ url_for('analyze') }}" class="nav-link">Analyze Library</a>
+<footer class="bottom">
+    <a href="{{ url_for('home') }}" class="btn btn-success">Go to Library</a>
+    <a href="{{ url_for('add') }}" class="btn btn-success">Add New Book</a>
+    <a href="{{ url_for('analyze') }}" class="btn btn-success">Analyze Library</a>
 </footer>
 
 {% endblock %}
