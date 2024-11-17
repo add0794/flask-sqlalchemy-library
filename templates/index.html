@@ -5,7 +5,7 @@
 {% block content %}
 <form action="{{ url_for('search') }}" method="get">
   <input type="text" name="q" placeholder="Search for a book">
-  <button type="submit">Search</button>
+  <button class='btn btn-success' type="submit">Search</button>
 </form>
 
 <!-- Flash Messages for Success -->
@@ -40,8 +40,8 @@
 
 <footer class="bottom">
 
-  <a href="{{ url_for('add') }}" class="nav-link">Add New Book</a>
-  <a href="{{ url_for('analyze') }}" class="nav-link">Analyze Library</a>
+  <a href="{{ url_for('add') }}" class="nav-link" class='btn btn-success'>Add New Book</a>
+  <a href="{{ url_for('analyze') }}" class="nav-link" class='btn btn-success'>Analyze Library</a>
 
 </footer>
 {% endblock %}

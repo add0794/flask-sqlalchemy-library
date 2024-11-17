@@ -4,33 +4,29 @@
 
 {% block content %}
 
+<h1>Search Results</h1>
+    {% if results %}
+        <ul>
+            {% for result in results %}
+                <li>
+                    <h2>{{ result.title }}</h2>
+                    <p>{{ result.description }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+
 <form action="{{ url_for('search') }}" method="get">
-    <input type="text" name="q" placeholder="Search for a book">
-    <button type="submit">Search</button>
+  <input type="text" name="q" placeholder="Search for a book">
+  <button type="submit">Search</button>
 </form>
 
-<h1>Search Results</h1>
-{% if results %}
-    <ul>
-        {% for result in results %}
-            <li>
-                <h2>{{ result.title }}</h2>
-                <h2>Author: {{ result.author }}</h2>
-                <h2>Rating: {{ result.rating }}</h2>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No results found.</p>
-{% endif %}
-  
-
-<footer class="bottom">
-
+<footer class="bottom"></footer>
     <a href="{{ url_for('home') }}" class="nav-link">Go to Library</a>
     <a href="{{ url_for('add') }}" class="nav-link">Add New Book</a>
     <a href="{{ url_for('analyze') }}" class="nav-link">Analyze Library</a>
-    
 </footer>
 
 {% endblock %}

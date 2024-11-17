@@ -1,11 +1,12 @@
 from database_backend import *
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 # import matplotlib.pyplot as plt
-# import multiprocessing
+# from multiprocessing import Process
 import pandas as pd
 from sqlalchemy import Integer, String, Float, create_engine
-# import threading
+import threading
 
 # Create the Flask application
 app = Flask(__name__)
@@ -44,6 +45,17 @@ def home(name=None):
     # Use .scalars() to get the elements rather than entire rows from the database
     all_books = result.scalars()
     return render_template('index.html', books=all_books, is_empty=is_empty)
+
+@app.route("/search", methods=["GET"])
+def search():
+    q = request.args.get('q')  # Get the search query from the URL parameters
+    if q:
+        # Apply the filter to search for books by title containing the query string
+        results = Book.query.filter(Book.title.contains(q)).all()
+    else:
+        results = []  # Return an empty list if there's no search term
+    return render_template("search.html", results=results)
+
 
 @app.route("/add", methods=["GET", "POST"])
 def add():
@@ -132,9 +144,10 @@ def delete():
 def analyze():
     if request.method == "POST":
         flash("Analysis complete!", "info")
-        engine = create_engine(URI)
-        with engine.connect() as conn:
-            df = pd.read_sql("SELECT * FROM books", conn)
+        engine = create_engine(database_uri())
+
+        with engine.connect() as connection:
+            df = pd.read_sql("SELECT * FROM books", connection)
             
             # Convert DataFrame to HTML
             df_html = df.to_html(classes="table table-striped", index=False)
@@ -142,10 +155,15 @@ def analyze():
             return render_template("analyze.html", df_html=df_html)
     return render_template("analyze.html", df_html=None)
 
+# @app.route('/plot', methods=["GET", "POST"])
+# def plot():
+#     if request.method == "POST":
+
+
 if __name__ == "__main__":
     # Option 1: Threading
-    db_check_thread = threading.Thread(target=check_database_file, daemon=True)
-    db_check_thread.start()
+    # db_check_thread = threading.Thread(target=check_database_file, daemon=True)
+    # db_check_thread.start()
 
     app.run(debug=True, use_reloader=False)
 
