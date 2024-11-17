@@ -1,38 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}Analyze Library{% endblock %}
+{% block title %}Analyze Books{% endblock %}
 
 {% block content %}
 
-<!-- Flash Messages -->
+<h1>Analyze Books</h1>
+
+
+<p>Collect data from any column and value of your choice.</p>
+
+<!-- Form to submit column and value -->
+<form action="{{ url_for('analyze') }}" method="POST">
+    <label for="column">Column:</label>
+    <input type="text" id="column" name="column" placeholder="Enter column name" class="form-control" required>
+    
+    <label for="value">Value:</label>
+    <input type="text" id="value" name="value" placeholder="Enter value" class="form-control" required>
+    
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+
+<!-- Flash messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <div class="flashes">
             {% for category, message in messages %}
-                <div class="flash-message {{ category }}">{{ message }}</div>
+                <div class="alert alert-{{ category }}">{{ message }}</div>
             {% endfor %}
         </div>
     {% endif %}
 {% endwith %}
 
-<h1>Analyze Book Data</h1>
-
-<p>Collect data on book ratings and much more.</p> 
-
+<!-- Display DataFrame as HTML table -->
 {% if df_html %}
     <h2>Analysis Results</h2>
-    <!-- Display DataFrame as HTML table -->
     <div>{{ df_html|safe }}</div>
 {% endif %}
 
-<!-- Button to start a new analysis -->
-<form method="POST" action="{{ url_for('analyze') }}" class="nav-link">
-    <button type="submit">Start New Analysis</button>
-</form>
-
-<!-- Button to go back to the library -->
-<form method="GET" action="{{ url_for('home') }}" class="nav-link">
-    <button type="submit">Go to Library</button>
-</form>
+<a href="{{ url_for('home') }}" class="btn btn-primary">Back to Library</a>
 
 {% endblock %}
