@@ -4,8 +4,10 @@
 
 {% block content %}
 <form action="{{ url_for('search') }}" method="get">
-  <input type="text" name="q" placeholder="Search for a book">
-  <button class='btn btn-success' type="submit">Search</button>
+  <div class="form-group d-flex align-items-center">
+    <input type="text" name="q" class="form-control mr-2" placeholder="Search for a book">
+    <button class="btn btn-success" type="submit">Search</button>
+  </div>
 </form>
 
 <!-- Flash Messages for Success -->
@@ -24,24 +26,45 @@
 {% endwith %}
 
 <h1>My Library</h1>
+
 {% if is_empty %}
 <p>Library is empty.</p>
+{% else %}
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Action</th>
+      <th scope="col">Title</th>
+      <th scope="col">Author</th>
+      <th scope="col">Rating</th>
+      <th scope="col">Edit</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for book in books %}
+    <tr>
+      <!-- Delete Button -->
+      <td>
+        <a href="{{ url_for('delete', id=book.id) }}" class="btn btn-danger btn-sm">Delete</a>
+      </td>
+      
+      <!-- Book Details -->
+      <td>{{ book.title }}</td>
+      <td>{{ book.author }}</td>
+      <td>{{ book.rating }}</td>
+
+      <!-- Edit Rating Button -->
+      <td>
+        <a href="{{ url_for('edit', id=book.id) }}" class="btn btn-primary btn-sm">Edit Rating</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endif %}
 
-<ul>
-  {% for book in books %}
-  <li>
-    <a href="{{ url_for('delete', id=book.id) }}">Delete</a>
-    {{ book.title }} by {{ book.author }} (Rating: {{ book.rating }})
-    <a href="{{ url_for('edit', id=book.id) }}">Edit Rating</a>
-  </li>
-  {% endfor %}
-</ul>
-
-<footer class="bottom">
-
-  <a href="{{ url_for('add') }}" class="nav-link" class='btn btn-success'>Add New Book</a>
-  <a href="{{ url_for('analyze') }}" class="nav-link" class='btn btn-success'>Analyze Library</a>
-
+<footer class="bottom mt-4">
+  <a href="{{ url_for('add') }}" class="btn btn-success">Add New Book</a>
+  <a href="{{ url_for('analyze') }}" class="btn btn-success">Analyze Library</a>
 </footer>
 {% endblock %}
