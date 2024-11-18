@@ -6,6 +6,16 @@
 
 <h1>Edit Library</h1>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="flashes">
+      {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %} 
+
 <form action="{{ url_for('edit') }}" method="POST">
   <!-- Hidden field to pass the book ID -->
   <input type="hidden" name="id" value="{{ book.id }}">
@@ -28,16 +38,5 @@
   <button type="submit" class="btn btn-success">Save Changes</button>
   <a href="{{ url_for('home') }}" class="btn btn-primary">Cancel</a>
 </form>
-
-<!-- Flash messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="flashes">
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endwith %}
 
 {% endblock %}
