@@ -35,13 +35,24 @@
 <h1>My Library</h1>
 
 <div class="buttons-container">
-  <form action="{{ url_for('clear_table') }}" method="POST">
-    <button type="submit" class="btn btn-danger">Clear Table</button>
+  <form id="clearTableForm" action="{{ url_for('clear_table') }}" method="POST">
+    <input type="hidden" name="confirm" value="true">
+    <button type="button" class="btn btn-danger" id="clearTableBtn">Clear Table</button>
   </form>
   <form action="/download_json" method="POST">
     <button type="submit" class="btn btn-success flash-success">Download Library</button>
   </form>
 </div>
+
+<script>
+  document.getElementById('clearTableBtn').addEventListener('click', function() {
+      if (confirm('Are you sure you want to clear the table? This action cannot be undone.')) {
+          document.getElementById('clearTableForm').submit();
+      } else {
+           // Add your custom action when user cancels
+           alert('Table clearing was cancelled.');
+  }});
+</script>
 
 {% if is_empty %}
   <p>Library is empty.</p>

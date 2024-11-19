@@ -38,20 +38,20 @@ class Book(db.Model):
             "rating": self.rating,
         }
 
-class Admin(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    password_hash = db.Column(db.String(128), nullable=False)
+# class Admin(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     password_hash = db.Column(db.String(128), nullable=False)
 
-    @property
-    def password(self):
-        raise AttributeError("Password is not a readable attribute.")
+#     @property
+#     def password(self):
+#         raise AttributeError("Password is not a readable attribute.")
 
-    @password.setter
-    def password(self, password):
-        self.password_hash = generate_password_hash(password)
+#     @password.setter
+#     def password(self, password):
+#         self.password_hash = generate_password_hash(password)
 
-    def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
+#     def verify_password(self, password):
+#         return check_password_hash(self.password_hash, password)
 
 app.app_context().push()
 db.create_all()
@@ -71,56 +71,36 @@ def home(name=None):
     all_books = result.scalars()
     return render_template('index.html', books=all_books, is_empty=is_empty)
 
-@app.route('/set_password', methods=["POST", "GET"])
-def set_password():
-    """
-    Generate and set a password for the admin.
-    """
-    if request.method == "POST":
-        new_password = request.form["new_password"]
-        confirm_password = request.form["confirm_password"]
+# @app.route('/set_password', methods=["POST", "GET"])
+# def set_password():
+#     """
+#     Generate and set a password for the admin.
+#     """
+#     if request.method == "POST":
+#         new_password = request.form["new_password"]
+#         confirm_password = request.form["confirm_password"]
 
-        if new_password != confirm_password:
-            flash("Passwords do not match!", "error")
-            return render_template("set_password.html")
+#         if new_password != confirm_password:
+#             flash("Passwords do not match!", "error")
+#             return render_template("set_password.html")
 
-        # Create or update the admin password
-        admin = Admin.query.first()
-        if not admin:
-            admin = Admin()  # Create new admin instance
+#         # Create or update the admin password
+#         admin = Admin.query.first()
+#         if not admin:
+#             admin = Admin()  # Create new admin instance
 
-        admin.password = new_password  # Hashes and stores the password
-        db.session.add(admin)
-        db.session.commit()
-        flash("Password set successfully!", "success")
-        return redirect(url_for("home"))
+#         admin.password = new_password  # Hashes and stores the password
+#         db.session.add(admin)
+#         db.session.commit()
+#         flash("Password set successfully!", "success")
+#         return redirect(url_for("home"))
 
-    return render_template("set_password.html")
+#     return render_template("set_password.html")
 
 @app.route('/clear_table', methods=["POST", "GET"])
 def clear_table():
     if request.method == "POST":
-        # Print full request details for debugging
-        print("Full request form:", request.form)
-        print("Request method:", request.method)
-        
-        # Use .get() method with a default or use request.form.get()
-        password = request.form.get("password")
-        
-        if not password:
-            # More informative error handling
-            print("No password submitted")
-            flash("Please enter a password.", "error")
-            return render_template("clear_table.html")
-        
-        # Rest of your existing code...
-        admin = Admin.query.first()
-        
-        if not admin:
-            flash("No admin password is set. Please contact the administrator.", "error")
-            return redirect(url_for('clear_table'))
-        
-        if admin.verify_password(password):
+        if request.form.get("confirm") == "true":
             db.reflect()
             db.drop_all()
             db.create_all()
@@ -128,140 +108,10 @@ def clear_table():
             flash("Table cleared successfully!", "success")
             return redirect(url_for('home'))
         else:
-            flash("You've entered the wrong password.", "error")
-    
+            flash("Table clearing cancelled.", "info")
+            return redirect(url_for('home'))
+
     return render_template("clear_table.html")
-
-# @app.route('/clear_table', methods=["POST", "GET"])
-# def clear_table():
-#     if request.method == "POST":
-#         # Print the form data for debugging
-#         print(request.form)
-        
-#         if "password" not in request.form:
-#             flash("Password field is missing in the form submission.", "error")
-#             return render_template("clear_table.html")
-        
-#         password = request.form["password"]
-        
-#         # Fetch the admin from the database
-#         admin = Admin.query.first()
-
-#         if not admin:
-#             flash("No admin password is set. Please contact the administrator.", "error")
-#             return redirect(url_for('clear_table'))
-
-#         if admin.verify_password(password):
-#             db.reflect()
-#             db.drop_all()
-#             db.create_all()
-#             db.session.commit()
-#             flash("Table cleared successfully!", "success")
-#             return redirect(url_for('home'))
-#         else:
-#             flash("You've entered the wrong password.", "error")
-
-#     return render_template("clear_table.html")
-
-
-# @app.route('/clear_table', methods=["POST", "GET"])
-# def clear_table():
-#     """
-#     Clear all tables in the database with password authentication.
-#     """
-#     if request.method == "POST":
-#         password = request.form["password"]
-        
-#         if verify_password(password):
-#             flash("You've entered the right password.", "success")
-#             db.reflect()  # Reflect tables from the database
-#             db.drop_all()  # Drop all tables
-#             db.create_all()  # Recreate tables
-#             db.session.commit()
-#             flash("Table cleared successfully!", "success")
-#             return redirect(url_for('home'))
-#         else:
-#             flash('You\'ve entered the wrong password.', 'error')
-
-#     return render_template("clear_table.html")
-
-# @app.route('/clear_table', methods=["POST", "GET"])
-# def clear_table():
-#     """
-#     Clear all tables in the database with password authentication.
-#     """
-#     if request.method == "POST":
-#         password = request.form["password"]
-
-#         # Fetch the admin from the database
-#         admin = Admin.query.first()  # Assuming only one admin exists
-
-#         # If no admin exists, return an error
-#         if not admin:
-#             flash("No admin password is set. Please contact the administrator.", "error")
-#             return redirect(url_for('clear_table'))
-
-#         # Verify the entered password
-#         if admin.verify_password(password):
-#             # Password is correct, clear the database
-#             db.reflect()  # Reflect tables from the database
-#             db.drop_all()  # Drop all tables
-#             db.create_all()  # Recreate tables
-#             db.session.commit()
-#             flash("Table cleared successfully!", "success")
-#             return redirect(url_for('home'))
-#         else:
-#             flash("You've entered the wrong password.", "error")
-
-#     return render_template("clear_table.html")
-
-# @app.route('/clear_table', methods=["POST", "GET"])
-# def clear_table():
-#     if request.method == "POST":
-#         # Print the form data for debugging
-        
-#         password = request.form["password"]
-        
-#         # Fetch the admin from the database
-#         admin = Admin.query.first()
-
-#         if not admin:
-#             flash("No admin password is set. Please contact the administrator.", "error")
-#             return redirect(url_for('clear_table'))
-
-#         if admin.verify_password(password):
-#             db.reflect()
-#             db.drop_all()
-#             db.create_all()
-#             db.session.commit()
-#             flash("Table cleared successfully!", "success")
-#             return redirect(url_for('home'))
-#         else:
-#             flash("You've entered the wrong password.", "error")
-
-#     return render_template("clear_table.html")
-
-
-
-
-# @app.route('/clear_table', methods=["POST"])
-# def clear_table():
-#     """
-#     Clear all tables in the database.
-#     """
-
-#     if request.method == "POST":
-#         password = request.form["password"]
-#         if password == not check_password_hash(self.password):
-#             flash("You've entered the wrong password.", "error")
-#         else:
-#             db.reflect()
-#             db.drop_all()
-#             db.create_all()  # Recreate the tables
-#             db.session.commit()
-#             flash("Table cleared successfully!", "success")
-#             return redirect(url_for('home'))
-#     return render_template("clear_table.html")
 
 @app.route('/download_json', methods=['POST'])
 def json_download():
