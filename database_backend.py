@@ -8,18 +8,15 @@ def database_path():
 
     # Create the database URI by joining the path and database name
     global database_path_uri
-    database_path_uri = os.path.join(basedir, 'books.db')
+    DATABASE_PATH = os.path.join(basedir, 'books.db')
 
-    return database_path_uri
+    return DATABASE_PATH
 
 def database_uri():
     # Create the engine URI
     DATABASE_URI = f'sqlite:///{database_path()}'
 
     return DATABASE_URI
-
-'sqlite:///books.db'
-print(database_uri())
 
 def check_database_file():
     """Background thread to check if the database file exists."""
