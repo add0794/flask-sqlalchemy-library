@@ -34,10 +34,6 @@ a:hover {
     text-decoration: underline;
 }
 
-/* a:visited {
-    color: #0056b3;
-} */
-
 p {
     color: #666;
     font-size: 1.1em;
@@ -55,6 +51,27 @@ p {
     gap: 20px; /* Space between links */
     padding: 10px; /* Padding around the links */
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Optional: Shadow for footer */
+}
+
+/* Align the search bar and buttons separately */
+.search-container {
+    margin-bottom: 20px; /* Add spacing below the search bar */
+    text-align: center; /* Optional: center align the search bar */
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center; /* Center the buttons horizontally */
+    gap: 10px; /* Add space between buttons */
+}
+
+/* Optional: Style buttons for consistency */
+.buttons-container button {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
 }
 
 /* Styling for *all* message boxes */
