@@ -53,25 +53,39 @@ p {
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Optional: Shadow for footer */
 }
 
-/* Align the search bar and buttons separately */
-.search-container {
-    margin-bottom: 20px; /* Add spacing below the search bar */
-    text-align: center; /* Optional: center align the search bar */
+/* Styling for search input and button */
+.search-input {
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid #ccc;
+    border-right: none; /* Remove right border for seamless connection */
+    border-radius: 4px 0 0 4px; /* Round only the left corners */
+    font-size: 16px;
+    box-sizing: border-box;
 }
 
+.search-button {
+    height: 40px;
+    padding: 0 16px;
+    background-color: #4285f4;
+    color: #fff;
+    border: 1px solid #ccc; /* Match input's border */
+    border-radius: 4px 0 0 4px; /* Round only the right corners */
+    font-size: 16px;
+    margin: 0; /* No gap between button and input */
+    box-sizing: border-box;
+}
+
+/* Styling for *all* buttons */
 .buttons-container {
     display: flex;
     justify-content: center; /* Center the buttons horizontally */
     gap: 10px; /* Add space between buttons */
 }
 
-/* Optional: Style buttons for consistency */
-.buttons-container button {
-    padding: 10px 20px;
-    font-size: 14px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
+/* Underline for buttons */
+button:hover {
+    text-decoration: underline;
 }
 
 /* Styling for *all* message boxes */
@@ -120,7 +134,7 @@ p {
     padding: 0 1rem;
 }
 
-/* Table styles */
+/* Styling for home page table */
 .search-results-table {
     width: 100%;
     border-collapse: collapse;
@@ -186,3 +200,16 @@ p {
         padding: 0.75rem;
     }
 }
+
+/* Styling for analysis table */
+
+.analysis-results-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .analysis-results-table th {
+    background-color: #f2f2f2;
+  }
