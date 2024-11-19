@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sqlalchemy import Integer, String, create_engine
 # import threading
-from werkzeug.security import generate_password_hash, check_password_hash
 
 # Create the Flask application
 app = Flask(__name__)
@@ -38,21 +37,6 @@ class Book(db.Model):
             "rating": self.rating,
         }
 
-# class Admin(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     password_hash = db.Column(db.String(128), nullable=False)
-
-#     @property
-#     def password(self):
-#         raise AttributeError("Password is not a readable attribute.")
-
-#     @password.setter
-#     def password(self, password):
-#         self.password_hash = generate_password_hash(password)
-
-#     def verify_password(self, password):
-#         return check_password_hash(self.password_hash, password)
-
 app.app_context().push()
 db.create_all()
 
@@ -70,32 +54,6 @@ def home(name=None):
     # Use .scalars() to get the elements rather than entire rows from the database
     all_books = result.scalars()
     return render_template('index.html', books=all_books, is_empty=is_empty)
-
-# @app.route('/set_password', methods=["POST", "GET"])
-# def set_password():
-#     """
-#     Generate and set a password for the admin.
-#     """
-#     if request.method == "POST":
-#         new_password = request.form["new_password"]
-#         confirm_password = request.form["confirm_password"]
-
-#         if new_password != confirm_password:
-#             flash("Passwords do not match!", "error")
-#             return render_template("set_password.html")
-
-#         # Create or update the admin password
-#         admin = Admin.query.first()
-#         if not admin:
-#             admin = Admin()  # Create new admin instance
-
-#         admin.password = new_password  # Hashes and stores the password
-#         db.session.add(admin)
-#         db.session.commit()
-#         flash("Password set successfully!", "success")
-#         return redirect(url_for("home"))
-
-#     return render_template("set_password.html")
 
 @app.route('/clear_table', methods=["POST", "GET"])
 def clear_table():
@@ -138,15 +96,6 @@ def json_download():
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
     return redirect(url_for('home'))
-
-# @app.route('/delete_database', methods=["POST"])
-# def delete_database():
-#     try:
-#         db_manager.delete_database()
-#         flash("Database deleted successfully!", "success")
-#     except Exception as e:
-#         flash(f"Error deleting database: {e}", "error")
-#     return redirect(url_for('home'))
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
@@ -226,7 +175,6 @@ def edit():
     book_id = request.args.get('id')
     book_selected = db.get_or_404(Book, book_id)
     return render_template('edit.html', book=book_selected)
-
 
 @app.route("/delete")
 def delete():
