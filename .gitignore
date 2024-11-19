@@ -2,6 +2,7 @@
 SQLite version.txt
 threading_test.py
 db_init.py
+analysis.py
 __pycache__
 
 # Byte-compiled / optimized / DLL files
