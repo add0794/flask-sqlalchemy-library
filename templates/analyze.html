@@ -11,24 +11,37 @@
 
 <!-- Form to submit column and value -->
 <form action="{{ url_for('analyze') }}" method="POST">
-    <label for="column">Column:</label>
-    <input type="text" id="column" name="column" placeholder="Enter column name" class="form-control" required>
+    <div class="form-group">
+        <label for="column">Select Column</label>
+        <select name="column" id="column" class="form-control">
+            <option value="id">ID</option>
+            <option value="title">Title</option>
+            <option value="author">Author</option>
+            <option value="rating">Rating</option>
+        </select>
+    </div>
     
-    <label for="value">Value:</label>
-    <input type="text" id="value" name="value" placeholder="Enter value" class="form-control" required>
+    <div class="form-group">
+        <label for="value">Value</label>
+        <input type="text" name="value" id="value" class="form-control" required>
+    </div>
     
-    <button type="submit" class="btn btn-success">Submit</button>
+    <button type="submit" class="btn btn-primary">Analyze</button>
 </form>
 
 <!-- Flash messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="flashes">
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
+  {% if messages %}
+    <div class="flashes flash-success">
+      {% for category, message in messages %}
+        {% if category == 'success' %}
+          <div class="flash-success">{{ message }}</div>
+        {% else %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
 {% endwith %}
 
 <!-- Display DataFrame as HTML table -->
@@ -37,6 +50,9 @@
     <div>{{ df_html|safe }}</div>
 {% endif %}
 
-<a href="{{ url_for('home') }}" class="btn btn-primary">Back to Library</a>
+<footer class="bottom mt-4">
+    
+    <a href="{{ url_for('home') }}" class="btn btn-success">Return to Library</a>
 
+</footer>
 {% endblock %}
