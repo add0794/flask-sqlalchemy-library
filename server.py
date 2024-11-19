@@ -1,5 +1,5 @@
 from database_backend import *
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 import matplotlib.pyplot as plt
@@ -28,6 +28,14 @@ class Book(db.Model):
     author = db.Column(db.String, nullable=False)
     rating = db.Column(db.Integer, nullable=False)
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "author": self.author,
+            "rating": self.rating,
+        }
+
 app.app_context().push()
 db.create_all()
 
@@ -46,14 +54,78 @@ def home(name=None):
     all_books = result.scalars()
     return render_template('index.html', books=all_books, is_empty=is_empty)
 
+@app.route('/clear_tables', methods=["POST"])
+def clear_tables():
+    """
+    Clear all tables in the database.
+    """
+    db.reflect()
+    db.drop_all()
+    db.create_all()  # Recreate the tables
+    flash("Tables cleared successfully!", "success")
+    return redirect(url_for('home'))
+
+# @app.route('/download_json', methods=['POST'])
+# def json_download():
+#     q = request.args.get('q', '')
+#     search = f"%{q}%"
+#     results = Book.query.all()
+#     if results:
+#         # Convert results to list of dictionaries
+#         books_json = [book.to_dict() for book in results]
+
+#         # Create JSON response with a file download
+#         response = make_response(jsonify(books=books_json))
+#         response.headers["Content-Disposition"] = "attachment; filename=books.json"
+#         response.headers["Content-Type"] = "application/json"
+#         return response, 200
+
+#     else:
+#         # No results found
+#         return jsonify({"error": "No matching books found"}), 404
+
+@app.route('/download_json', methods=['POST'])
+def json_download():
+    # Fetch all books in the library
+    results = Book.query.all()
+
+    if results:
+        # Convert results to a list of dictionaries
+        books_json = [book.to_dict() for book in results]
+        return jsonify(books=books_json), 200
+    else:
+        # No books found
+        return jsonify({"error": "No books found"}), 404
+
+    # if results:
+    #     # Convert results to a list of dictionaries
+    #     return jsonify(books=[Book.to_dict() for book in results]), 200
+    # else:
+    #     # Handle case where user with given ID is not found
+    #     return jsonify({"error": "User not found"}), 404
+    #     books_json = [book.to_dict() for book in results]
+
+    #     # Create JSON response with a file download
+    #     response = make_response(jsonify(books=books_json))
+    #     response.headers["Content-Disposition"] = "attachment; filename=library_books.json"
+    #     response.headers["Content-Type"] = "application/json"
+    #     return response, 200
+
+    # else:
+    #     # No books found
+    #     return jsonify({"error": "No books in the library"}), 404
+
+@app.route('/delete_database', methods=["POST"])
+def delete_database():
+    try:
+        db_manager.delete_database()
+        flash("Database deleted successfully!", "success")
+    except Exception as e:
+        flash(f"Error deleting database: {e}", "error")
+    return redirect(url_for('home'))
+
 @app.route("/search", methods=["GET"])
 def search():
-    # q = request.args.get('q')  # Get the search query from the URL parameters
-    # if q:
-    #     # Apply the filter to search for books by title containing the query string
-    #     results = Book.query.filter(Book.title.contains(q)).all()
-    # else:
-    #     results = []  # Return an empty list if there's no search term
     q = request.args.get('q', '')
     search = f"%{q}%"
     results = Book.query.filter(
