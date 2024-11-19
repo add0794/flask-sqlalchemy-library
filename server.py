@@ -1,12 +1,14 @@
 from database_backend import *
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
+import json
 from sqlalchemy import or_
 import matplotlib.pyplot as plt
 # from multiprocessing import Process
 import pandas as pd
 from sqlalchemy import Integer, String, create_engine
 # import threading
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Create the Flask application
 app = Flask(__name__)
@@ -36,6 +38,21 @@ class Book(db.Model):
             "rating": self.rating,
         }
 
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    password_hash = db.Column(db.String(128), nullable=False)
+
+    @property
+    def password(self):
+        raise AttributeError("Password is not a readable attribute.")
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 app.app_context().push()
 db.create_all()
 
@@ -54,79 +71,236 @@ def home(name=None):
     all_books = result.scalars()
     return render_template('index.html', books=all_books, is_empty=is_empty)
 
-@app.route('/clear_tables', methods=["POST"])
-def clear_tables():
+@app.route('/set_password', methods=["POST", "GET"])
+def set_password():
     """
-    Clear all tables in the database.
+    Generate and set a password for the admin.
     """
-    db.reflect()
-    db.drop_all()
-    db.create_all()  # Recreate the tables
-    flash("Tables cleared successfully!", "success")
-    return redirect(url_for('home'))
+    if request.method == "POST":
+        new_password = request.form["new_password"]
+        confirm_password = request.form["confirm_password"]
 
-# @app.route('/download_json', methods=['POST'])
-# def json_download():
-#     q = request.args.get('q', '')
-#     search = f"%{q}%"
-#     results = Book.query.all()
-#     if results:
-#         # Convert results to list of dictionaries
-#         books_json = [book.to_dict() for book in results]
+        if new_password != confirm_password:
+            flash("Passwords do not match!", "error")
+            return render_template("set_password.html")
 
-#         # Create JSON response with a file download
-#         response = make_response(jsonify(books=books_json))
-#         response.headers["Content-Disposition"] = "attachment; filename=books.json"
-#         response.headers["Content-Type"] = "application/json"
-#         return response, 200
+        # Create or update the admin password
+        admin = Admin.query.first()
+        if not admin:
+            admin = Admin()  # Create new admin instance
 
-#     else:
-#         # No results found
-#         return jsonify({"error": "No matching books found"}), 404
+        admin.password = new_password  # Hashes and stores the password
+        db.session.add(admin)
+        db.session.commit()
+        flash("Password set successfully!", "success")
+        return redirect(url_for("home"))
+
+    return render_template("set_password.html")
+
+@app.route('/clear_table', methods=["POST", "GET"])
+def clear_table():
+    if request.method == "POST":
+        # Print full request details for debugging
+        print("Full request form:", request.form)
+        print("Request method:", request.method)
+        
+        # Use .get() method with a default or use request.form.get()
+        password = request.form.get("password")
+        
+        if not password:
+            # More informative error handling
+            print("No password submitted")
+            flash("Please enter a password.", "error")
+            return render_template("clear_table.html")
+        
+        # Rest of your existing code...
+        admin = Admin.query.first()
+        
+        if not admin:
+            flash("No admin password is set. Please contact the administrator.", "error")
+            return redirect(url_for('clear_table'))
+        
+        if admin.verify_password(password):
+            db.reflect()
+            db.drop_all()
+            db.create_all()
+            db.session.commit()
+            flash("Table cleared successfully!", "success")
+            return redirect(url_for('home'))
+        else:
+            flash("You've entered the wrong password.", "error")
+    
+    return render_template("clear_table.html")
+
+# @app.route('/clear_table', methods=["POST", "GET"])
+# def clear_table():
+#     if request.method == "POST":
+#         # Print the form data for debugging
+#         print(request.form)
+        
+#         if "password" not in request.form:
+#             flash("Password field is missing in the form submission.", "error")
+#             return render_template("clear_table.html")
+        
+#         password = request.form["password"]
+        
+#         # Fetch the admin from the database
+#         admin = Admin.query.first()
+
+#         if not admin:
+#             flash("No admin password is set. Please contact the administrator.", "error")
+#             return redirect(url_for('clear_table'))
+
+#         if admin.verify_password(password):
+#             db.reflect()
+#             db.drop_all()
+#             db.create_all()
+#             db.session.commit()
+#             flash("Table cleared successfully!", "success")
+#             return redirect(url_for('home'))
+#         else:
+#             flash("You've entered the wrong password.", "error")
+
+#     return render_template("clear_table.html")
+
+
+# @app.route('/clear_table', methods=["POST", "GET"])
+# def clear_table():
+#     """
+#     Clear all tables in the database with password authentication.
+#     """
+#     if request.method == "POST":
+#         password = request.form["password"]
+        
+#         if verify_password(password):
+#             flash("You've entered the right password.", "success")
+#             db.reflect()  # Reflect tables from the database
+#             db.drop_all()  # Drop all tables
+#             db.create_all()  # Recreate tables
+#             db.session.commit()
+#             flash("Table cleared successfully!", "success")
+#             return redirect(url_for('home'))
+#         else:
+#             flash('You\'ve entered the wrong password.', 'error')
+
+#     return render_template("clear_table.html")
+
+# @app.route('/clear_table', methods=["POST", "GET"])
+# def clear_table():
+#     """
+#     Clear all tables in the database with password authentication.
+#     """
+#     if request.method == "POST":
+#         password = request.form["password"]
+
+#         # Fetch the admin from the database
+#         admin = Admin.query.first()  # Assuming only one admin exists
+
+#         # If no admin exists, return an error
+#         if not admin:
+#             flash("No admin password is set. Please contact the administrator.", "error")
+#             return redirect(url_for('clear_table'))
+
+#         # Verify the entered password
+#         if admin.verify_password(password):
+#             # Password is correct, clear the database
+#             db.reflect()  # Reflect tables from the database
+#             db.drop_all()  # Drop all tables
+#             db.create_all()  # Recreate tables
+#             db.session.commit()
+#             flash("Table cleared successfully!", "success")
+#             return redirect(url_for('home'))
+#         else:
+#             flash("You've entered the wrong password.", "error")
+
+#     return render_template("clear_table.html")
+
+# @app.route('/clear_table', methods=["POST", "GET"])
+# def clear_table():
+#     if request.method == "POST":
+#         # Print the form data for debugging
+        
+#         password = request.form["password"]
+        
+#         # Fetch the admin from the database
+#         admin = Admin.query.first()
+
+#         if not admin:
+#             flash("No admin password is set. Please contact the administrator.", "error")
+#             return redirect(url_for('clear_table'))
+
+#         if admin.verify_password(password):
+#             db.reflect()
+#             db.drop_all()
+#             db.create_all()
+#             db.session.commit()
+#             flash("Table cleared successfully!", "success")
+#             return redirect(url_for('home'))
+#         else:
+#             flash("You've entered the wrong password.", "error")
+
+#     return render_template("clear_table.html")
+
+
+
+
+# @app.route('/clear_table', methods=["POST"])
+# def clear_table():
+#     """
+#     Clear all tables in the database.
+#     """
+
+#     if request.method == "POST":
+#         password = request.form["password"]
+#         if password == not check_password_hash(self.password):
+#             flash("You've entered the wrong password.", "error")
+#         else:
+#             db.reflect()
+#             db.drop_all()
+#             db.create_all()  # Recreate the tables
+#             db.session.commit()
+#             flash("Table cleared successfully!", "success")
+#             return redirect(url_for('home'))
+#     return render_template("clear_table.html")
 
 @app.route('/download_json', methods=['POST'])
 def json_download():
-    # Fetch all books in the library
-    results = Book.query.all()
-
-    if results:
-        # Convert results to a list of dictionaries
-        books_json = [book.to_dict() for book in results]
-        return jsonify(books=books_json), 200
-    else:
-        # No books found
-        return jsonify({"error": "No books found"}), 404
-
-    # if results:
-    #     # Convert results to a list of dictionaries
-    #     return jsonify(books=[Book.to_dict() for book in results]), 200
-    # else:
-    #     # Handle case where user with given ID is not found
-    #     return jsonify({"error": "User not found"}), 404
-    #     books_json = [book.to_dict() for book in results]
-
-    #     # Create JSON response with a file download
-    #     response = make_response(jsonify(books=books_json))
-    #     response.headers["Content-Disposition"] = "attachment; filename=library_books.json"
-    #     response.headers["Content-Type"] = "application/json"
-    #     return response, 200
-
-    # else:
-    #     # No books found
-    #     return jsonify({"error": "No books in the library"}), 404
-
-@app.route('/delete_database', methods=["POST"])
-def delete_database():
     try:
-        db_manager.delete_database()
-        flash("Database deleted successfully!", "success")
+        # Query the entire library
+        results = Book.query.all()
+        
+        # Convert to a list of dictionaries
+        books_json = [book.to_dict() for book in results]
+
+        # Serialize to JSON string
+        json_data = json.dumps(books_json, indent=4)
+
+        # Create a response for file download
+        response = Response(
+            json_data,
+            mimetype='application/json',
+            headers={
+                "Content-Disposition": "attachment; filename=library_books.json"
+            }
+        )
+        flash("Table downloaded successfully!", "success")
+        return response
     except Exception as e:
-        flash(f"Error deleting database: {e}", "error")
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
     return redirect(url_for('home'))
 
-@app.route("/search", methods=["GET"])
+# @app.route('/delete_database', methods=["POST"])
+# def delete_database():
+#     try:
+#         db_manager.delete_database()
+#         flash("Database deleted successfully!", "success")
+#     except Exception as e:
+#         flash(f"Error deleting database: {e}", "error")
+#     return redirect(url_for('home'))
+
+@app.route("/search", methods=["GET", "POST"])
 def search():
-    q = request.args.get('q', '')
+    q = request.args.get('q')
     search = f"%{q}%"
     results = Book.query.filter(
     or_(
@@ -252,11 +426,9 @@ def analyze():
     # Render the initial analyze page
     return render_template("analyze.html", df_html=None)
 
-
 # @app.route('/plot', methods=["GET", "POST"])
 # def plot():
 #     if request.method == "POST":
-
 
 if __name__ == "__main__":
     # Option 1: Threading
