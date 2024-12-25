@@ -46,8 +46,8 @@
 
 <!-- Display DataFrame as HTML table -->
 {% if df_html %}
-    <h2>Analysis Results</h2>
-    <div>{{ df_html|safe }}</div>
+  <h2>Analysis Results</h2>
+  <div class="table-container">{{ df_html|safe }}</div>
 {% endif %}
 
 <footer class="bottom mt-4">

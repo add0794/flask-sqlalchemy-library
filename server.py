@@ -2,11 +2,10 @@ from database_backend import *
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
 import json
-from sqlalchemy import or_
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # from multiprocessing import Process
 import pandas as pd
-from sqlalchemy import Integer, String, create_engine
+from sqlalchemy import or_, Integer, String, create_engine
 # import threading
 
 # Create the Flask application
